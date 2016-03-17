@@ -2,41 +2,37 @@
 <html>
 <body>
 
-<p>Click the button to display an alert box:</p>
+<p>Click the button to start the test 2s:</p>
 
-<button onclick="myFunction()">Try it</button>
+<button onclick="myFunction()">Go!</button>
 
 <script>
 
 function myFunction() {
-    const lookupfile="c:/temp/qrcodes.csv";
-    alert(getQueryString('qrCode'));
-    var arr = readCSV(lookupfile);
+  var lookupfile="./qrcodes.csv";
+  
+  var prodCode = getQueryString("Prod", window.location.href)
+  alert(prodCode);
+    
+  var arr = readCSV(lookupfile);
 
-/**
+
  for (var i=0;i<arr.length;i++) {
       alert("test"); 	
      // arr[i] = parseLineCSV(arr[i]);
  }
 
-**/
+
 
 };
 
 
-/**
- * Get the value of a querystring
- * @param  {String} field The field to get the value of
- * @param  {String} url   The URL to get the value from (optional)
- * @return {String}       The field value
- */
  var getQueryString = function ( field, url ) {
     var href = url ? url : window.location.href;
     var reg = new RegExp( '[?&]' + field + '=([^&#]*)', 'i' );
     var string = reg.exec(href);
     return string ? string[1] : null;
 };
-
 
 function readCSV(locfile) {
 // load a whole csv file, and then split it line by line
