@@ -2,7 +2,11 @@
 <html>
 <body>
 
+<<<<<<< HEAD:redirect.html
 <p>Click the button to start the test 2s:</p>
+=======
+<p>Click the button to start the test:</p>
+>>>>>>> ce7cc56071e528c97ea5fa134f766f896aa5e03a:qrcode.html
 
 <button onclick="myFunction()">Go!</button>
 
@@ -29,7 +33,8 @@ function myFunction() {
 
  var getQueryString = function ( field, url ) {
     var href = url ? url : window.location.href;
-    var reg = new RegExp( '[?&]' + field + '=([^&#]*)', 'i' );
+    var reg = new RegExp( '[?&]' + '=([^&#]*)', 'i' );
+    //var reg = new RegExp( '[?&]' + field + '=([^&#]*)', 'i' );
     var string = reg.exec(href);
     return string ? string[1] : null;
 };
