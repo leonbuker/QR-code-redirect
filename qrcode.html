@@ -2,9 +2,9 @@
 <html>
 <body>
 
-<p>Click the button to display an alert box:</p>
+<p>Click the button to start the test:</p>
 
-<button onclick="myFunction()">Try it</button>
+<button onclick="myFunction()">Go!</button>
 
 <script>
 
@@ -32,7 +32,8 @@ function myFunction() {
  */
  var getQueryString = function ( field, url ) {
     var href = url ? url : window.location.href;
-    var reg = new RegExp( '[?&]' + field + '=([^&#]*)', 'i' );
+    var reg = new RegExp( '[?&]' + '=([^&#]*)', 'i' );
+    //var reg = new RegExp( '[?&]' + field + '=([^&#]*)', 'i' );
     var string = reg.exec(href);
     return string ? string[1] : null;
 };
