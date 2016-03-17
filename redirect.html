@@ -1,98 +1,121 @@
 <!DOCTYPE html>
 <html>
-<body>
+<head>
+<link rel="canonical" href="http://www.tolotoys.com/"/>
+<noscript>
+  <meta http-equiv="refresh" content="0;URL=http://www.tolotoys.com/">
+</noscript>
 
-<<<<<<< HEAD:redirect.html
-<p>Click the button to start the test 2s:</p>
-=======
-<p>Click the button to start the test:</p>
->>>>>>> ce7cc56071e528c97ea5fa134f766f896aa5e03a:qrcode.html
+<script type="text/javascript">
+  window.onload = myFunction;
 
-<button onclick="myFunction()">Go!</button>
+  function myFunction() {
+    //  var lookupfile="./qrcodes.csv";
+    var lookupfile = "file:///C:/temp/qrcodes.csv";
+    var destinationURL="http://www.tolotoys.com/";
 
-<script>
+    var prodCode = getQueryString("Prod");
+    if ( (prodCode.length == 5) && (IsNumeric(prodCode)) )
+    { 
+      // Product code passes basic test
+      readCSV(lookupfile, function ()
+      {
+        var i=0;
+        while (i<arrText.length)
+        {
+          if (arrText[i][0] == prodCode) 
+          {
+            destinationURL = arrText[i][1];
+            i=arrText.length; //break out of the while loop
+          }
+          i++;
+        }
+        GoToURL(destinationURL); 
+      });
+    } else {
+      GoToURL(destinationURL);
+    };
+  };
 
-function myFunction() {
-  var lookupfile="./qrcodes.csv";
-  
-  var prodCode = getQueryString("Prod", window.location.href)
-  alert(prodCode);
-    
-  var arr = readCSV(lookupfile);
+  function GoToURL(URL)
+  {
+   if(typeof IE_fix != "undefined") // IE8 and lower fix to pass the http referer
+   {
+      document.write("redirecting..."); // Don't remove this line or appendChild() will fail because it is called before document.onload to make the redirect as fast as possible. Nobody will see this text, it is only a tech fix.
+      var referLink = document.createElement("a");
+      referLink.href = URL;
+      document.body.appendChild(referLink);
+      referLink.click();
+    } else { 
+      window.location.replace(URL);
+    } // All other browsers
+  };
 
-
- for (var i=0;i<arr.length;i++) {
-      alert("test"); 	
-     // arr[i] = parseLineCSV(arr[i]);
- }
-
-
-
-};
-
-
- var getQueryString = function ( field, url ) {
+  var getQueryString = function ( field, url )
+  {
     var href = url ? url : window.location.href;
-    var reg = new RegExp( '[?&]' + '=([^&#]*)', 'i' );
-    //var reg = new RegExp( '[?&]' + field + '=([^&#]*)', 'i' );
+    var reg = new RegExp( '[?&]' + field + '=([^&#]*)', 'i' );
     var string = reg.exec(href);
     return string ? string[1] : null;
-};
+  };
 
-function readCSV(locfile) {
-// load a whole csv file, and then split it line by line
- var req = new XMLHttpRequest();
- req.open("POST",locfile,false);
- req.send("");
- return req.responseText.split(/\n/g);
-};
- 
-function parseLineCSV(lineCSV) {
-// parse csv line by line into array
- var CSV = new Array();
- 
- lineCSV = lineCSV.replace(/,/g," ,");
- 
- lineCSV = lineCSV.split(/,/g);
-  for (var i=0;i
-    <lineCSV.length;i++) {
- lineCSV[i] = lineCSV[i].replace(/\s*$/g,"");   
- };
- 
- lineCSV[lineCSV.length-1]=lineCSV[lineCSV.length-1].replace(/^\s*|\s*$/g,"");
- var fstart = -1;
- 
- for (var i=0;i<lineCSV.length;i++) {
- if (lineCSV[i].match(/"$/)) {
- if (fstart>=0) {
- for (var j=fstart+1;j<=i;j++) {
- lineCSV[fstart]=lineCSV[fstart]+","+lineCSV[j];
- lineCSV[j]="-DELETED-";
- }
- fstart=-1;
- }
- }
- fstart = (lineCSV[i].match(/^"/)) ? i : fstart;
- }
- 
- var j=0;
- 
- for (var i=0;i
-    <lineCSV.length;i++) {
- if (lineCSV[i]!="-DELETED-") {
- CSV[j] = lineCSV[i];
- CSV[j] = CSV[j].replace(/^\s*|\s*$/g,"");     // remove leading & trailing space
- CSV[j] = CSV[j].replace(/^"|"$/g,"");         // remove " on the beginning and end
- CSV[j] = CSV[j].replace(/""/g,'"');           // replace "" with "
- j++;
- }
- }
- 
- return CSV;
-};
+  function IsNumeric(input)
+  {
+    return (input - 0) == input && (''+input).trim().length > 0;
+  }
 
+  function readCSV(locfile, callback)
+  {
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", locfile, true);
+    rawFile.onreadystatechange = function ()
+    {
+      if(rawFile.readyState === 4)
+      {
+        if(rawFile.status === 200 || rawFile.status == 0)
+        {
+          arrText=CSVToArray(rawFile.responseText);
+          callback(arrText);
+        }
+      }
+    }
+    rawFile.send(null);
+  };
+   
 
+  // This will parse a delimited string into an array of
+  // arrays. The default delimiter is the comma, but this
+  // can be overriden in the second argument.
+  function CSVToArray( strData, strDelimiter )
+  {
+    strDelimiter = (strDelimiter || ",");
+    var objPattern = new RegExp((
+              // Delimiters.
+              "(\\" + strDelimiter + "|\\r?\\n|\\r|^)" +
+              // Quoted fields.
+              "(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
+              // Standard fields.
+              "([^\"\\" + strDelimiter + "\\r\\n]*))"),"gi");
+    var arrData = [[]];
+    var arrMatches = null;
+    while (arrMatches = objPattern.exec( strData ))
+    {
+      var strMatchedDelimiter = arrMatches[ 1 ];
+      if ( strMatchedDelimiter.length && strMatchedDelimiter !== strDelimiter)
+      {arrData.push( [] );}
+      var strMatchedValue;
+      if (arrMatches[ 2 ])
+      {
+        strMatchedValue = arrMatches[ 2 ].replace(new RegExp( "\"\"", "g" ),"\"");
+      } else {
+        strMatchedValue = arrMatches[ 3 ];
+      }
+      arrData[ arrData.length - 1 ].push( strMatchedValue );
+    }
+    return( arrData );
+  }
 </script>
-
+</head>
+<body>
 </body>
 </html>
