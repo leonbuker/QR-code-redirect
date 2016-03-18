@@ -10,36 +10,41 @@
   window.onload = myFunction;
 
   function myFunction() {
+    // location of CSV file listing redirect locations
     //  var lookupfile="./qrcodes.csv";
     var lookupfile = "file:///C:/temp/qrcodes.csv";
+    // set a default location
     var destinationURL="http://www.tolotoys.com/";
 
-    var prodCode = getQueryString("Prod");
-    if ( (prodCode.length == 5) && (IsNumeric(prodCode)) )
+    var prodCode = getQueryString("Prod"); //read in product code from URL
+    
+    if ( (prodCode !== null) && (prodCode.length == 5) && (isNumeric(prodCode)) )
     { 
-      // Product code passes basic test
+      // Product code passes basic tests
+      // open CSV file to lookup redirect address
       readCSV(lookupfile, function ()
       {
         var i=0;
-        while (i<arrText.length)
+        while (i<arrText.length) // step through array of CSV file
         {
-          if (arrText[i][0] == prodCode) 
+          if (arrText[i][0] == prodCode) //look for matching product code
           {
-            destinationURL = arrText[i][1];
+            destinationURL = isURL(arrText[i][1]) ? arrText[i][1] : destinationURL; //update destination to URL
             i=arrText.length; //break out of the while loop
           }
-          i++;
+          i++; // next line in array
         }
-        GoToURL(destinationURL); 
+        GoToURL(destinationURL); //redirect to this address
       });
     } else {
+      // product code failed basic tests, jump to default URL
       GoToURL(destinationURL);
     };
   };
 
   function GoToURL(URL)
   {
-   if(typeof IE_fix != "undefined") // IE8 and lower fix to pass the http referer
+   if(typeof IE_fix !== "undefined") // IE8 and lower fix to pass the http referer
    {
       document.write("redirecting..."); // Don't remove this line or appendChild() will fail because it is called before document.onload to make the redirect as fast as possible. Nobody will see this text, it is only a tech fix.
       var referLink = document.createElement("a");
@@ -52,6 +57,8 @@
   };
 
   var getQueryString = function ( field, url )
+  // extract query string from a URL
+  // e.g. http://site/page.html?field1=value,field2=value
   {
     var href = url ? url : window.location.href;
     var reg = new RegExp( '[?&]' + field + '=([^&#]*)', 'i' );
@@ -59,12 +66,41 @@
     return string ? string[1] : null;
   };
 
-  function IsNumeric(input)
+  function isNumeric(input)
+  // returns a boolean indicating is input is a string of numbers
   {
     return (input - 0) == input && (''+input).trim().length > 0;
   }
 
+
+  function isURL(str)
+  {
+    var pattern = new RegExp("^(?:(?:https?|ftp)://)" +   // protocol identifier
+        "(?:\\S+(?::\\S*)?@)?(?:" +  // user:pass authentication
+        "(?!(?:10|127)(?:\\.\\d{1,3}){3})" +   // IP address exclusion
+        "(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})" +       // private & local networks
+        "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})" +
+          // IP address dotted notation octets
+          // excludes loopback network 0.0.0.0
+          // excludes reserved space >= 224.0.0.0
+          // excludes network & broacast addresses
+          // (first & last IP address of each class)
+        "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" +
+        "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" +
+        "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|" +
+        "(?:(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)" + // host name
+        "(?:\\.(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)*" + // domain name
+        "(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))" + // TLD identifier
+        "\\.?)" + // TLD may end with dot
+        "(?::\\d{2,5})?" +     // port number
+        "(?:[/?#]\\S*)?" +     // resource path
+        "$", "i");  // fragment locator
+    return pattern.test(str);
+  }
+
+
   function readCSV(locfile, callback)
+  // async. open a file and place into an array
   {
     var rawFile = new XMLHttpRequest();
     rawFile.open("GET", locfile, true);
@@ -83,10 +119,10 @@
   };
    
 
+  function CSVToArray( strData, strDelimiter )
   // This will parse a delimited string into an array of
   // arrays. The default delimiter is the comma, but this
   // can be overriden in the second argument.
-  function CSVToArray( strData, strDelimiter )
   {
     strDelimiter = (strDelimiter || ",");
     var objPattern = new RegExp((
