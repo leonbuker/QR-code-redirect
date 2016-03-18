@@ -11,7 +11,7 @@
 
   function myFunction() {
     // location of CSV file listing redirect locations
-    var lookupfile="http://leonbuker.github.io/tolo/qrcodes.csv";
+    var lookupfile="qrcodes.csv";
     // set a default location
     var destinationURL="http://www.tolotoys.com/";
 
@@ -72,7 +72,6 @@ alert(prodCode);
     return (input - 0) == input && (''+input).trim().length > 0;
   }
 
-
   function isURL(str)
   {
     var pattern = new RegExp("^(?:(?:https?|ftp)://)" +   // protocol identifier
@@ -98,7 +97,6 @@ alert(prodCode);
     return pattern.test(str);
   }
 
-
   function readCSV(locfile, callback)
   // async. open a file and place into an array
   {
@@ -117,7 +115,6 @@ alert(prodCode);
     }
     rawFile.send(null);
   };
-   
 
   function CSVToArray( strData, strDelimiter )
   // This will parse a delimited string into an array of
