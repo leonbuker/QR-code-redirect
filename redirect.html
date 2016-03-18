@@ -16,7 +16,6 @@
     var destinationURL="http://www.tolotoys.com/";
 
     var prodCode = getQueryString("Prod"); //read in product code from URL
-alert(prodCode);
     if ( (prodCode !== null) && (prodCode.length == 5) && (isNumeric(prodCode)) )
     { 
       // Product code passes basic tests
@@ -24,7 +23,6 @@ alert(prodCode);
       readCSV(lookupfile, function ()
       {
         var i=0;
-                alert("csv called");
         while (i<arrText.length) // step through array of CSV file
         {
           if (arrText[i][0] == prodCode) //look for matching product code
